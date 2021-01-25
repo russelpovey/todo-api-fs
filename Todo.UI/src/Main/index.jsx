@@ -6,7 +6,6 @@ import { Button, Form, Input } from "../SharedUI";
 function Main() {
   const { state, setState, getToDos } = useDataStore();
   useEffect(getToDos, []);
-  const [newToDo, setNewToDo] = useState();
   return (
     <Container>
       <Header>
@@ -16,7 +15,7 @@ function Main() {
         </span>
       </Header>
       <Body>
-        <Button onClick={}>Add ToDo!</Button>
+        <NewToDo />
         {state.todos.map((c) => (
           <Card key={c.id} {...c} />
         ))}
@@ -24,6 +23,57 @@ function Main() {
     </Container>
   );
 }
+function NewToDo() {
+  const [newToDo, setNewToDo] = useState(false);
+  const { addToDo, getToDos } = useDataStore();
+  const [state, setState] = useState({
+    title: "",
+    description: "",
+    isComplete: false,
+  });
+
+  return !newToDo ? (
+    <div>
+      <Button onClick={() => setNewToDo(true)}>Add ToDo!</Button>
+    </div>
+  ) : (
+    <CardWrap>
+      <div>
+        <Form>
+          <Input name="title" state={state} setState={setState} />
+          <Input name="description" state={state} setState={setState} />
+          <label>
+            Is Complete:
+            <input
+              type={"checkbox"}
+              checked={state.isComplete}
+              onChange={(e) =>
+                setState((p) => ({ ...p, isComplete: e.target.checked }))
+              }
+            />
+          </label>
+
+          <div>
+            <Button
+              onClick={() => {
+                console.log("SAVING: ", state);
+                addToDo(state).then(() => {
+                  setNewToDo(false);
+                  getToDos();
+                });
+              }}
+            >
+              Save
+            </Button>
+            <Button onClick={() => setNewToDo(false)}>Cancel</Button>
+            <Button onClick={() => setNewToDo(false)}>Save</Button>
+          </div>
+        </Form>
+      </div>
+    </CardWrap>
+  );
+}
+
 function Card(props) {
   const [state, setState] = useState(props);
   const [edit, setEdit] = useState(false);
@@ -104,6 +154,7 @@ const Header = styled.div`
 const Body = styled.div`
   padding: 40px;
   display: flex;
+  flex-direction: column;
 `;
 
 const CardWrap = styled.div`

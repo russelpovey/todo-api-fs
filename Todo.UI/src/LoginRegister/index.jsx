@@ -15,7 +15,7 @@ function Login() {
   return (
     <LoginContainer>
       <LoginBox>
-        {login ? (
+        {!login ? (
           <LoginForm toggleLogin={toggleLogin} />
         ) : (
           <RegisterForm toggleLogin={toggleLogin} />
