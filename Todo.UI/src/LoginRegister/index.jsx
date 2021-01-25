@@ -6,7 +6,6 @@ import axios from "axios";
 
 function Login() {
   const [login, setLogin] = useState(false);
-  const [message, seMessage] = useState("");
 
   function toggleLogin() {
     return setLogin((p) => !p);
@@ -30,7 +29,7 @@ function LoginForm({ toggleLogin }) {
     password: "",
     message: "",
   });
-  const { setState: setAppState } = useDataStore();
+  const { setState: setAppState, expireSession } = useDataStore();
 
   function login(username, password) {
     return auth(username, password).then((token) => {
@@ -40,7 +39,6 @@ function LoginForm({ toggleLogin }) {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((user) => {
-          console.log("USER: ", user);
           setAppState((p) => ({ ...p, user: user.data }));
         });
     });
@@ -56,10 +54,9 @@ function LoginForm({ toggleLogin }) {
       .then(
         (response) => {
           // success
-          console.log({ response });
           const token = response.data.token;
+          setTimeout(expireSession, 900000);
           return token;
-          // setAppState((p) => ({ ...p, user: { username } }));
         },
         (error) => {
           setState((p) => ({
@@ -67,7 +64,6 @@ function LoginForm({ toggleLogin }) {
             message:
               "There was an error, please ensure you have the right details registered",
           }));
-          console.log({ error, msg: error.response.data });
         }
       );
   }
@@ -115,7 +111,6 @@ function RegisterForm({ toggleLogin }) {
   });
 
   function register(email, password) {
-    console.log("Attempting to register: ", email, password);
     return axios
       .post("http://localhost:5000/api/auth/register", {
         email,
@@ -126,12 +121,10 @@ function RegisterForm({ toggleLogin }) {
         (response) => {
           // success
           toggleLogin();
-          console.log({ response });
         },
         (error) => {
           const message = error.response.data;
           setState((p) => ({ ...p, message }));
-          console.log({ error, msg: error.response.data });
         }
       );
   }
@@ -185,8 +178,19 @@ const LoginContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background: grey;
+  --stripe: #cfd8dc;
+  --bg: #e1e1e1;
+
+  background: linear-gradient(135deg, var(--bg) 25%, transparent 25%) -50px 0,
+    linear-gradient(225deg, var(--bg) 25%, transparent 25%) -50px 0,
+    linear-gradient(315deg, var(--bg) 25%, transparent 25%),
+    linear-gradient(45deg, var(--bg) 25%, transparent 25%);
+  background-size: 100px 100px;
+  background-color: var(--stripe);
 `;
 const LoginBox = styled.div`
+  background: white;
   border-radius: 4px;
   padding: 10px;
   box-shadow: 0 1px 1px 1px #00000038;

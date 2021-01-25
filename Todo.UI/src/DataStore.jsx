@@ -7,6 +7,7 @@ function DataStore({ children }) {
   const [state, setState] = useState({
     user: null,
     token: null,
+    message: "",
     todos: [
       {
         type: "string",
@@ -18,9 +19,13 @@ function DataStore({ children }) {
     ],
   });
 
-  console.log(state);
-  function logOut() {
-    setState((p) => ({ ...p, user: null, token: null }));
+  function expireSession() {
+    setState((p) => ({
+      ...p,
+      user: null,
+      token: null,
+      message: "Please login again, session expired",
+    }));
   }
 
   function getToDos() {
@@ -30,7 +35,6 @@ function DataStore({ children }) {
       })
       .then((res) => {
         setState((p) => ({ ...p, todos: res.data }));
-        console.log({ res });
       });
   }
 
@@ -50,7 +54,9 @@ function DataStore({ children }) {
     );
   }
 
-  function removeToDo() {}
+  function removeToDo(id) {
+    return axios.delete(`http://localhost:5000/api/todos/${id}`, getConfig());
+  }
 
   function editToDo(todo) {
     return axios.put(
@@ -62,7 +68,15 @@ function DataStore({ children }) {
 
   return (
     <DataContext.Provider
-      value={{ state, setState, getToDos, addToDo, editToDo }}
+      value={{
+        state,
+        setState,
+        getToDos,
+        addToDo,
+        editToDo,
+        expireSession,
+        removeToDo,
+      }}
     >
       {children}
     </DataContext.Provider>

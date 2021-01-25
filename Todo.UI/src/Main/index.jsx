@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useDataStore } from "../DataStore";
-import { Button, Form, Input } from "../SharedUI";
+import Card from "./Card";
+import NewToDo from "./NewToDo";
 
 function Main() {
   const { state, setState, getToDos } = useDataStore();
@@ -23,110 +24,20 @@ function Main() {
     </Container>
   );
 }
-function NewToDo() {
-  const [newToDo, setNewToDo] = useState(false);
-  const { addToDo, getToDos } = useDataStore();
-  const [state, setState] = useState({
-    title: "",
-    description: "",
-    isComplete: false,
-  });
 
-  return !newToDo ? (
-    <div>
-      <Button onClick={() => setNewToDo(true)}>Add ToDo!</Button>
-    </div>
-  ) : (
-    <CardWrap>
-      <div>
-        <Form>
-          <Input name="title" state={state} setState={setState} />
-          <Input name="description" state={state} setState={setState} />
-          <label>
-            Is Complete:
-            <input
-              type={"checkbox"}
-              checked={state.isComplete}
-              onChange={(e) =>
-                setState((p) => ({ ...p, isComplete: e.target.checked }))
-              }
-            />
-          </label>
+//=========
+// STYLES
+//=========
 
-          <div>
-            <Button
-              onClick={() => {
-                console.log("SAVING: ", state);
-                addToDo(state).then(() => {
-                  setNewToDo(false);
-                  getToDos();
-                });
-              }}
-            >
-              Save
-            </Button>
-            <Button onClick={() => setNewToDo(false)}>Cancel</Button>
-            <Button onClick={() => setNewToDo(false)}>Save</Button>
-          </div>
-        </Form>
-      </div>
-    </CardWrap>
-  );
-}
-
-function Card(props) {
-  const [state, setState] = useState(props);
-  const [edit, setEdit] = useState(false);
-  const { editToDo, getToDos } = useDataStore();
-  const visible = edit ? state : props;
-  console.log("CARD: ", state);
-  console.log("CARD comp: ", props.isComplete);
-  return (
-    <CardWrap>
-      {!edit ? (
-        <div>
-          <h3>{props.title}</h3>
-          <p>{props.description}</p>
-          <p>{`Complete:   ${props.isComplete ? "✔" : "❌"}`}</p>
-          <Button onClick={() => setEdit(true)}>Edit</Button>
-        </div>
-      ) : (
-        <div>
-          <Form>
-            <Input name="title" state={state} setState={setState} />
-            <Input name="description" state={state} setState={setState} />
-            <label>
-              Is Complete:
-              <input
-                type={"checkbox"}
-                checked={state.isComplete}
-                onChange={(e) =>
-                  setState((p) => ({ ...p, isComplete: e.target.checked }))
-                }
-              />
-            </label>
-
-            <div>
-              <Button
-                onClick={() => {
-                  console.log("SAVING: ", state);
-                  editToDo(state).then(() => {
-                    setEdit(false);
-                    getToDos();
-                  });
-                }}
-              >
-                Save
-              </Button>
-              <Button onClick={() => setEdit(false)}>Cancel</Button>
-            </div>
-          </Form>
-        </div>
-      )}
-    </CardWrap>
-  );
-}
-
+const SplitButtons = styled.div`
+  display: flex;
+  & > button:first-child {
+    margin-right: 5px;
+  }
+  & > button:last-child {
+    margin-left: 5px;
+  }
+`;
 const Container = styled.div`
   width: 100vw;
   overflow-x: hidden;
@@ -157,8 +68,6 @@ const Body = styled.div`
   flex-direction: column;
 `;
 
-const CardWrap = styled.div`
-  border: 1px solid black;
-`;
+export { SplitButtons };
 
 export default Main;

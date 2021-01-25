@@ -41,7 +41,8 @@ const Label = styled.label`
 `;
 const Button = styled.button`
   border-radius: 4px;
-  background: blue;
+  background: ${({ secondary }) => (secondary ? "#f44336" : "#009688")};
+  box-shadow: 0 1px 1px 1px #00000040;
   color: white;
   cursor: pointer;
   width: 100%;
