@@ -1,4 +1,3 @@
-import "./App.css";
 import { useDataStore } from "./DataStore";
 import Login from "./LoginRegister";
 import Main from "./Main";

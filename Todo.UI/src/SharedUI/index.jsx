@@ -17,7 +17,6 @@ function Input({
         value={state ? state[name] : value}
         name={name}
         type={type}
-        autoComplete={false}
         onChange={
           onChange
             ? onChange
