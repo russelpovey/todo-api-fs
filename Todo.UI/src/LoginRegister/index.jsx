@@ -9,7 +9,6 @@ function Login() {
   const [message, seMessage] = useState("");
 
   function toggleLogin() {
-    console.log("SWAP: ", login);
     return setLogin((p) => !p);
   }
 
@@ -34,7 +33,17 @@ function LoginForm({ toggleLogin }) {
   const { setState: setAppState } = useDataStore();
 
   function login(username, password) {
-    return auth(username, password);
+    return auth(username, password).then((token) => {
+      setAppState((p) => ({ ...p, token }));
+      return axios
+        .get("http://localhost:5000/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((user) => {
+          console.log("USER: ", user);
+          setAppState((p) => ({ ...p, user: user.data }));
+        });
+    });
   }
 
   function auth(username, password) {
@@ -47,7 +56,10 @@ function LoginForm({ toggleLogin }) {
       .then(
         (response) => {
           // success
-          setAppState((p) => ({ ...p, user: { username } }));
+          console.log({ response });
+          const token = response.data.token;
+          return token;
+          // setAppState((p) => ({ ...p, user: { username } }));
         },
         (error) => {
           setState((p) => ({

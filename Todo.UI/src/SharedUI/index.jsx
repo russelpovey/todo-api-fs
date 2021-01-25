@@ -12,7 +12,7 @@ function Input({
 }) {
   return (
     <Label>
-      {label}
+      {!label ? name : label}
       <input
         value={state ? state[name] : value}
         name={name}

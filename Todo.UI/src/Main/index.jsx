@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDataStore } from "../DataStore";
+import { Button, Form, Input } from "../SharedUI";
+
 function Main() {
-  const { setState } = useDataStore();
+  const { state, setState, getToDos } = useDataStore();
+  useEffect(getToDos, []);
+  const [newToDo, setNewToDo] = useState();
   return (
     <Container>
       <Header>
@@ -11,7 +15,65 @@ function Main() {
           Sign Out
         </span>
       </Header>
+      <Body>
+        <Button onClick={}>Add ToDo!</Button>
+        {state.todos.map((c) => (
+          <Card key={c.id} {...c} />
+        ))}
+      </Body>
     </Container>
+  );
+}
+function Card(props) {
+  const [state, setState] = useState(props);
+  const [edit, setEdit] = useState(false);
+  const { editToDo, getToDos } = useDataStore();
+  const visible = edit ? state : props;
+  console.log("CARD: ", state);
+  console.log("CARD comp: ", props.isComplete);
+  return (
+    <CardWrap>
+      {!edit ? (
+        <div>
+          <h3>{props.title}</h3>
+          <p>{props.description}</p>
+          <p>{`Complete:   ${props.isComplete ? "✔" : "❌"}`}</p>
+          <Button onClick={() => setEdit(true)}>Edit</Button>
+        </div>
+      ) : (
+        <div>
+          <Form>
+            <Input name="title" state={state} setState={setState} />
+            <Input name="description" state={state} setState={setState} />
+            <label>
+              Is Complete:
+              <input
+                type={"checkbox"}
+                checked={state.isComplete}
+                onChange={(e) =>
+                  setState((p) => ({ ...p, isComplete: e.target.checked }))
+                }
+              />
+            </label>
+
+            <div>
+              <Button
+                onClick={() => {
+                  console.log("SAVING: ", state);
+                  editToDo(state).then(() => {
+                    setEdit(false);
+                    getToDos();
+                  });
+                }}
+              >
+                Save
+              </Button>
+              <Button onClick={() => setEdit(false)}>Cancel</Button>
+            </div>
+          </Form>
+        </div>
+      )}
+    </CardWrap>
   );
 }
 
@@ -38,6 +100,14 @@ const Header = styled.div`
     cursor: pointer;
     margin-right: 50px;
   }
+`;
+const Body = styled.div`
+  padding: 40px;
+  display: flex;
+`;
+
+const CardWrap = styled.div`
+  border: 1px solid black;
 `;
 
 export default Main;
