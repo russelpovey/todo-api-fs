@@ -35,7 +35,7 @@ function LoginForm({ toggleLogin }) {
     return auth(username, password).then((token) => {
       setAppState((p) => ({ ...p, token }));
       return axios
-        .get("http://localhost:5000/api/auth/me", {
+        .get(process.env.REACT_APP_API + "auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((user) => {
@@ -46,7 +46,7 @@ function LoginForm({ toggleLogin }) {
 
   function auth(username, password) {
     return axios
-      .post("http://localhost:5000/api/auth", {
+      .post(process.env.REACT_APP_API + "auth", {
         email: username,
         username,
         password,
@@ -112,7 +112,7 @@ function RegisterForm({ toggleLogin }) {
 
   function register(email, password) {
     return axios
-      .post("http://localhost:5000/api/auth/register", {
+      .post(process.env.REACT_APP_API + "auth/register", {
         email,
         username: email,
         password,

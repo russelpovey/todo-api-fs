@@ -30,7 +30,7 @@ function DataStore({ children }) {
 
   function getToDos() {
     return axios
-      .get("http://localhost:5000/api/todos", {
+      .get(process.env.REACT_APP_API + "todos", {
         headers: { Authorization: `Bearer ${state.token}` },
       })
       .then((res) => {
@@ -44,7 +44,7 @@ function DataStore({ children }) {
 
   function addToDo({ title, description, isComplete = false }) {
     return axios.post(
-      "http://localhost:5000/api/todos",
+      process.env.REACT_APP_API + "todos",
       {
         title,
         description,
@@ -60,7 +60,7 @@ function DataStore({ children }) {
 
   function editToDo(todo) {
     return axios.put(
-      "http://localhost:5000/api/todos/" + todo.id,
+      process.env.REACT_APP_API + "todos/" + todo.id,
       todo,
       getConfig()
     );
