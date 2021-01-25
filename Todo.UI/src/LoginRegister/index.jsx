@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useDataStore } from "../DataStore";
-import { Button, Form, Input } from "../SharedUI";
-import axios from "axios";
+import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
 function Login() {
   const [login, setLogin] = useState(false);
+  const {
+    state: { message },
+  } = useDataStore();
 
   function toggleLogin() {
     return setLogin((p) => !p);
@@ -14,6 +17,7 @@ function Login() {
   return (
     <LoginContainer>
       <LoginBox>
+        {message.length > 0 ? <span className="error">{message}</span> : null}
         {!login ? (
           <LoginForm toggleLogin={toggleLogin} />
         ) : (
@@ -21,154 +25,6 @@ function Login() {
         )}
       </LoginBox>
     </LoginContainer>
-  );
-}
-function LoginForm({ toggleLogin }) {
-  const [state, setState] = useState({
-    username: "",
-    password: "",
-    message: "",
-  });
-  const { setState: setAppState, expireSession } = useDataStore();
-
-  function login(username, password) {
-    return auth(username, password).then((token) => {
-      setAppState((p) => ({ ...p, token }));
-      return axios
-        .get(process.env.REACT_APP_API + "auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((user) => {
-          setAppState((p) => ({ ...p, user: user.data }));
-        });
-    });
-  }
-
-  function auth(username, password) {
-    return axios
-      .post(process.env.REACT_APP_API + "auth", {
-        email: username,
-        username,
-        password,
-      })
-      .then(
-        (response) => {
-          // success
-          const token = response.data.token;
-          setTimeout(expireSession, 900000);
-          return token;
-        },
-        (error) => {
-          setState((p) => ({
-            ...p,
-            message:
-              "There was an error, please ensure you have the right details registered",
-          }));
-        }
-      );
-  }
-
-  return (
-    <Form>
-      <h2>Login</h2>
-      {state.message.length > 0 ? (
-        <span className="error" onClick={toggleLogin}>
-          {state.message}
-        </span>
-      ) : null}
-      <Input
-        label="Username"
-        name="username"
-        state={state}
-        setState={setState}
-      />
-      <Input
-        label="Password"
-        name="password"
-        type="password"
-        state={state}
-        setState={setState}
-      />
-      <Button
-        onClick={() => login(state.username, state.password)}
-        disabled={state.username.length < 3 || state.password.length < 3}
-      >
-        Login
-      </Button>
-      <span onClick={toggleLogin} className="link">
-        New here? - register now!
-      </span>
-    </Form>
-  );
-}
-
-function RegisterForm({ toggleLogin }) {
-  const [state, setState] = useState({
-    email: "",
-    password: "",
-    password_confirm: "",
-    message: "",
-  });
-
-  function register(email, password) {
-    return axios
-      .post(process.env.REACT_APP_API + "auth/register", {
-        email,
-        username: email,
-        password,
-      })
-      .then(
-        (response) => {
-          // success
-          toggleLogin();
-        },
-        (error) => {
-          const message = error.response.data;
-          setState((p) => ({ ...p, message }));
-        }
-      );
-  }
-  return (
-    <Form>
-      <h2>Register</h2>
-      <Input label="email" name="email" state={state} setState={setState} />
-      <Input
-        label="Password"
-        name="password"
-        type="password"
-        state={state}
-        setState={setState}
-      />
-
-      <Input
-        label="Confirm Password"
-        name="password_confirm"
-        type="password"
-        state={state}
-        setState={setState}
-      />
-      {state.message.length > 0 ? (
-        <span className="error" onClick={toggleLogin}>
-          {state.message}
-        </span>
-      ) : null}
-      <Button
-        onClick={() => {
-          setState((p) => ({ ...p, message: "" }));
-          register(state.email, state.password);
-        }}
-        disabled={
-          state.password !== state.password_confirm ||
-          state.password.length < 3 ||
-          state.email.length < 3
-        }
-      >
-        Register
-      </Button>
-      <span className="link" onClick={toggleLogin}>
-        Already registered? - Login!
-      </span>
-    </Form>
   );
 }
 
@@ -194,6 +50,12 @@ const LoginBox = styled.div`
   border-radius: 4px;
   padding: 10px;
   box-shadow: 0 1px 1px 1px #00000038;
+  span.error {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+  }
 `;
 
 export default Login;

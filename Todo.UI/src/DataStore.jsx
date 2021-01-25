@@ -8,15 +8,7 @@ function DataStore({ children }) {
     user: null,
     token: null,
     message: "",
-    todos: [
-      {
-        type: "string",
-        title: "string",
-        status: 0,
-        detail: "string",
-        instance: "string",
-      },
-    ],
+    todos: [],
   });
 
   function expireSession() {
@@ -28,6 +20,10 @@ function DataStore({ children }) {
     }));
   }
 
+  function getConfig() {
+    return { headers: { Authorization: `Bearer ${state.token}` } };
+  }
+
   function getToDos() {
     return axios
       .get(process.env.REACT_APP_API + "todos", {
@@ -36,10 +32,6 @@ function DataStore({ children }) {
       .then((res) => {
         setState((p) => ({ ...p, todos: res.data }));
       });
-  }
-
-  function getConfig() {
-    return { headers: { Authorization: `Bearer ${state.token}` } };
   }
 
   function addToDo({ title, description, isComplete = false }) {
