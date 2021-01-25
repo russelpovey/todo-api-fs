@@ -31,7 +31,7 @@ function RegisterForm({ toggleLogin }) {
   return (
     <Form>
       <h2>Register</h2>
-      <Input label="email" name="email" state={state} setState={setState} />
+      <Input label="Email" name="email" state={state} setState={setState} />
       <Input
         label="Password"
         name="password"

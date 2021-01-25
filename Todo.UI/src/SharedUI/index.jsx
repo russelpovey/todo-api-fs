@@ -31,6 +31,7 @@ const Label = styled.label`
   font-weight: bold;
   display: flex;
   flex-direction: column;
+  text-transform: capitalize;
   input {
     padding: 10px;
     border-radius: 4px;
